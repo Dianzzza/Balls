@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "UTF-8"/>
+        <style>
+            html, body
+            {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+        </style>
+
+    </head>
+    <body>
+        <canvas id = "myCanvas"></canvas>
+        <script>
+            const canvas = document.getElementById("myCanvas");
+            const ctx = canvas.getContext("2d");
+            canvas.height = innerHeight;
+            canvas.width = innerWidth;
+            const CANVAS_HEIGHT = canvas.height;
+            const CANVAS_WIDTH = canvas.width;
+
+            const BALL_R = 15;
+
+            var balls = [];
+
+            function addRandomBall()
+            {
+                var ball = 
+                {
+                    x: innerWidth/2,
+                    y: innerHeight/2 - Math.random()*innerHeight/4,
+                    dx: Math.random()*10-5,
+                    dy: Math.random()*10-5,
+                    color: 'rgb('+Math.random()*255+','+Math.random()*255+','+Math.random()*255+')'
+                }
+                balls.push(ball);
+            }
+
+            for(let i=0;i<500;i++)
+            {
+                addRandomBall();
+            }
+
+            var mouseBall =
+            {
+                x: innerWidth/2,
+                y: innerHeight/2,
+                color: 'purple'
+            }
+
+            function drawBall (x, y, color)
+            {
+                ctx.beginPath();
+                ctx.arc(x, y, BALL_R, 0, Math.PI *2, true);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+
+            function clearCanvas()
+            {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+            }
+
+            function updateState()
+            {
+                for(let i=0;i<balls.length;i++)
+                {
+                    if(balls[i].x + BALL_R > innerWidth)
+                    {
+                        balls[i].dx = -balls[i].dx;
+                    }
+                    if(balls[i].y + BALL_R > innerHeight)
+                    {
+                        balls[i].dy = -balls[i].dy;
+                    }
+                    if(balls[i].x - BALL_R < 0)
+                    {
+                        balls[i].dx = -balls[i].dx;
+                    }
+                    if(balls[i].y - BALL_R < 0)
+                    {
+                        balls[i].dy = -balls[i].dy;
+                    }
+                    balls[i].x += balls[i].dx;
+                    balls[i].y += balls[i].dy;
+                    balls[i].dy += 0.15;
+                }
+                draw();
+                window.requestAnimationFrame(updateState);
+            }
+
+            function draw()
+            {
+                clearCanvas();
+                for(let i=0;i<balls.length;i++)
+                {
+                    drawBall(balls[i].x,balls[i].y,balls[i].color);
+                }
+                drawBall(mouseBall.x,mouseBall.y,mouseBall.color);
+            }
+
+            window.addEventListener('mousemove',function (event)
+            {
+                mouseBall.x = event.clientX;
+                mouseBall.y = event.clientY;
+            });
+
+            updateState();
+        </script>
+    </body>
+</html>
